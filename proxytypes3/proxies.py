@@ -1,4 +1,4 @@
-class AbstractProxy(object):
+class AbstractProxy:
     """
     Delegates all operations (except ``.__subject__``) to another object.
     """
@@ -52,25 +52,25 @@ class AbstractProxy(object):
         return ob in self.__subject__
 
     for name in 'repr str hash len abs complex int long float iter oct hex bool operator.index math.trunc'.split():
-        if name in ('len', 'complex') or hasattr(int, '__%s__' % name.split('.')[-1]):
+        if name in ('len', 'complex') or hasattr(int, f'__{name.split(".")[-1]}__'):
             if '.' in name:
                 name = name.split('.')
-                exec("global %s; from %s import %s" % (name[1], name[0], name[1]))
+                exec(f"global {name[1]}; from {name[0]} import {name[1]}")
                 name = name[1]
-            exec("def __%s__(self): return %s(self.__subject__)" % (name, name))
+            exec(f"def __{name}__(self): return {name}(self.__subject__)")
 
     for name in 'cmp', 'coerce', 'divmod':
-        if hasattr(int, '__%s__' % name):
-            exec("def __%s__(self,ob): return %s(self.__subject__,ob)" % (name, name))
+        if hasattr(int, f'__{name}__'):
+            exec(f"def __{name}__(self,ob): return {name}(self.__subject__,ob)")
 
     for name, op in [
         ('lt', '<'), ('gt', '>'), ('le', '<='), ('ge', '>='),
         ('eq', '=='), ('ne', '!=')
     ]:
-        exec("def __%s__(self,ob): return self.__subject__ %s ob" % (name, op))
+        exec(f"def __{name}__(self,ob): return self.__subject__ {op} ob")
 
     for name, op in [('neg', '-'), ('pos', '+'), ('invert', '~')]:
-        exec("def __%s__(self): return %s self.__subject__" % (name, op))
+        exec(f"def __{name}__(self): return {op} self.__subject__")
 
     for name, op in [
         ('or', '|'), ('and', '&'), ('xor', '^'), ('lshift', '<<'), ('rshift', '>>'),
@@ -80,16 +80,16 @@ class AbstractProxy(object):
         if name == 'div' and not hasattr(int, '__div__'):
             continue
         exec((
-            "def __%(name)s__(self, ob):\n"
-            "    return self.__subject__ %(op)s ob\n"
+            f"def __{name}__(self, ob):\n"
+            f"    return self.__subject__ {op} ob\n"
             "\n"
-            "def __r%(name)s__(self, ob):\n"
-            "    return ob %(op)s self.__subject__\n"
+            f"def __r{name}__(self, ob):\n"
+            f"    return ob {op} self.__subject__\n"
             "\n"
-            "def __i%(name)s__(self, ob):\n"
-            "    self.__subject__ %(op)s=ob\n"
+            f"def __i{name}__(self, ob):\n"
+            f"    self.__subject__ {op}=ob\n"
             "    return self\n"
-        )  % locals())
+        ))
 
     del name, op
 
@@ -98,7 +98,8 @@ class AbstractProxy(object):
     def __rdivmod__(self, ob):
         return divmod(ob, self.__subject__)
 
-    def __pow__(self, *args):
+    def __pow__(self, *args):  # pylint: disable=unexpected-special-method-signature
+        # Deliberately variadic: pow(subject), pow(subject, exp), pow(subject, exp, mod).
         return pow(self.__subject__, *args)
 
     def __ipow__(self, ob):

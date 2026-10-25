@@ -1,7 +1,7 @@
 Simple Proxy Types
 ==================
 
-[![](https://img.shields.io/pypi/v/proxytypes3.svg)](https://pypi.python.org/pypi/proxytypes3) [![Build Status](https://img.shields.io/travis/chrisspen/proxytypes3.svg?branch=master)](https://travis-ci.org/chrisspen/proxytypes3)
+[![](https://img.shields.io/pypi/v/proxytypes3.svg)](https://pypi.python.org/pypi/proxytypes3) [![CI](https://github.com/chrisspen/proxytypes3/actions/workflows/ci.yml/badge.svg)](https://github.com/chrisspen/proxytypes3/actions/workflows/ci.yml)
 
 The `proxytypes3` package provides some useful base classes for creating
 proxies and wrappers for ordinary Python objects.  Proxy objects automatically
